@@ -1,0 +1,2 @@
+maybe change lsgan_loss_discriminator function so parameters are copied to avoid in place operations
+and possible gradient miscalculations which could occur by the current approach of using .detach()
