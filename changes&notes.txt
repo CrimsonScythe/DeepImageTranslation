@@ -1,2 +1,2 @@
-Working cycleGAN part (Generators and Discriminators)
-Tested on single image.
+model_final.ipynb 
+sifa3.py most recent with dropout fixes (supervised)
