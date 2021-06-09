@@ -208,8 +208,8 @@ from torch.utils.data import DataLoader
 
 # drive.mount('/gdrive')
 # ROOT_DIR = "/home/pmj428/Dir/MM-WHS 2017 Dataset/"
-# ROOT_DIR = "C:/Users/hasee/Documents/bachelor/MM-WHS 2017 Dataset/MM-WHS 2017 Dataset/"
-ROOT_DIR = "/zhome/0d/7/157010/MM-WHS 2017 Dataset/"
+ROOT_DIR = "C:/Users/hasee/Documents/bachelor/MM-WHS 2017 Dataset/MM-WHS 2017 Dataset/"
+# ROOT_DIR = "/zhome/0d/7/157010/MM-WHS 2017 Dataset/"
 
 mri_input_filename = os.path.join(ROOT_DIR,'ct_train',
                                           'ct_train_1001_image.nii.gz')
@@ -264,11 +264,18 @@ filename_pairs2.append(lbl)
 # filename_pairs.append(dat2)
 # filename_pairs2.append(lbl2)
 
-print(filename_pairs)
 
-print(type(filename_pairs[0]))
-print(len(filename_pairs2[0]))
+'''
+get sepcific
+'''
+# dat=filename_pairs[2]
+# lbl=filename_pairs2[3]
 
+# filename_pairs.clear()
+# filename_pairs2.clear()
+
+# filename_pairs.append(dat)
+# filename_pairs2.append(lbl)
 
 train_transform = transforms.Compose([
 
@@ -315,6 +322,14 @@ from itertools import islice
 #         print(i['input'].shape)
 #         print(i['gt'].shape)        
 
+
+# for i in islice(dataloader, 80,81):
+#   vis(i['input'])
+#   vis(i['gt'])
+
+# for k in islice(dataloader2, 80,81):
+#   vis(k['input'])
+#   vis(k['gt'])
 # for _ in range(1):
 #     # for batch in dataloader2:
 #     for batch in islice(dataloader2, 340, 341):
@@ -1037,16 +1052,15 @@ Dice loss
 def _dice_loss(logits, gt):
   dice=0
   eps=1e-7
-  # softmax=torch.nn.Softmax()
-  # softmaxpred = softmax(logits)
-  # softmaxpred=torch.softmax(logits, dim=1)
-  softmaxpred=torch.nn.functional.softmax(logits, dim=1)
-  for i in range(5):
+
+  # softmaxpred=torch.nn.functional.softmax(logits, dim=1)
+  softmaxpred=logits
+  for i in range(1):
     inse = torch.sum(softmaxpred[:,i,:,:]*gt[:,i,:,:])
     l = torch.sum(softmaxpred[:,i,:,:]*softmaxpred[:,i,:,:])
-    r = torch.sum(gt[:,i,:,:])
+    r = torch.sum(gt[:,i,:,:]*gt[:,i,:,:])
     dice += 2.0 * inse/(l+r+eps)
-  return 1-1.0*dice/5
+  return 1-1.0*dice/1
 '''
 Task loss:
 cross entropy loss + dice loss
@@ -1094,9 +1108,9 @@ import random
 import pickle
 import tensorflow as tf
 
-# DIR='C:/Users/hasee/Documents/bachelor/finalresults'
+DIR='C:/Users/hasee/Documents/bachelor/finalresults'
 # DIR = "/home/pmj428/Dir/finalresults"
-DIR="/zhome/0d/7/157010/finalresults"
+# DIR="/zhome/0d/7/157010/finalresults"
 cuda = torch.cuda.is_available()
 
 '''
@@ -1133,7 +1147,7 @@ discriminator_p_II = Discriminator((5,64,64))
 
 '''
 Moving to multiple gpus
-'''
+# '''
 # Encoder = nn.DataParallel(Encoder)
 # Decoder = nn.DataParallel(Decoder)
 # discriminator = nn.DataParallel(discriminator)
@@ -1169,15 +1183,15 @@ optimizer_D_P = torch.optim.Adam(discriminator_p.parameters(), lr=opt["lr"], bet
 optimizer_D_P_II=torch.optim.Adam(discriminator_p_II.parameters(), lr=opt["lr"], betas=(opt["b1"], opt["b2"]))
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.Tensor
-G_A.train()
-discriminator.train()
-Encoder.train()
-Decoder.train()
-discriminator_aux.train()
-segmenter.train()
-segmenter_II.train()
-discriminator_p.train()
-discriminator_p_II.train()
+# G_A.train()
+# discriminator.train()
+# Encoder.train()
+# Decoder.train()
+# discriminator_aux.train()
+# segmenter.train()
+# segmenter_II.train()
+# discriminator_p.train()
+# discriminator_p_II.train()
 
 '''
 Training loop starts
@@ -1195,108 +1209,96 @@ data=[]
 #         if (i < 30):
 #           continue
 #         print(epoch, i)
+# Encoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/finalresultsencoder.pt'))
+# Decoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/finalresultsdecoder.pt'))
+# discriminator.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/finalresultsdiscrim.pt'))
+# discriminator_aux.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/finalresultsdiscrimaux.pt'))
+# G_A.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/finalresultsga.pt'))
+# segmenter.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/finalresultsseg.pt'))
+# segmenter_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/finalresultssegtwo.pt'))
+# discriminator_p.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/finalresultsdiscrimp.pt'))
+# discriminator_p_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/finalresultsdiscrimptwo.pt'))
+
+# Encoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/encoder.pt'))
+# Decoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/decoder.pt'))
+# discriminator.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/discrim.pt'))
+# discriminator_aux.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/discrimaux.pt'))
+# G_A.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/ga.pt'))
+# segmenter.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/seg.pt'))
+# segmenter_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/segtwo.pt'))
+# discriminator_p.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/discrimp.pt'))
+# discriminator_p_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/discrimptwo.pt'))
+
+# Encoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runtwo/encoder.pt'))
+# Decoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runtwo/decoder.pt'))
+# discriminator.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runtwo/discrim.pt'))
+# discriminator_aux.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runtwo/discrimaux.pt'))
+# G_A.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runtwo/ga.pt'))
+# segmenter.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runtwo/seg.pt'))
+# segmenter_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runtwo/segtwo.pt'))
+# discriminator_p.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runtwo/discrimp.pt'))
+# discriminator_p_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runtwo/discrimptwo.pt'))
+
+# Encoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/runtwo/finalresultsencoder.pt'))
+# Decoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/runtwo/finalresultsdecoder.pt'))
+# discriminator.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/runtwo/finalresultsdiscrim.pt'))
+# discriminator_aux.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/runtwo/finalresultsdiscrimaux.pt'))
+# G_A.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/runtwo/finalresultsga.pt'))
+# segmenter.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/runtwo/finalresultsseg.pt'))
+# segmenter_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/runtwo/finalresultssegtwo.pt'))
+# discriminator_p.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/runtwo/finalresultsdiscrimp.pt'))
+# discriminator_p_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/full/runtwo/finalresultsdiscrimptwo.pt'))
 
 
-# for i in islice(dataloader, 100,101):
-#   vis(i['input'])
-#   vis(i['gt'])
+# Encoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runthreefixedlr/encoder.pt'))
+# Decoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runthreefixedlr/decoder.pt'))
+# discriminator.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runthreefixedlr/discrim.pt'))
+# discriminator_aux.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runthreefixedlr/discrimaux.pt'))
+# G_A.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runthreefixedlr/ga.pt'))
+# segmenter.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runthreefixedlr/seg.pt'))
+# segmenter_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runthreefixedlr/segtwo.pt'))
+# discriminator_p.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runthreefixedlr/discrimp.pt'))
+# discriminator_p_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/runthreefixedlr/discrimptwo.pt'))
 
-# for k in islice(dataloader2, 150,151):
-#   vis(k['input'])
-#   vis(k['gt'])
+
+Encoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/rundisoff/encoder.pt'))
+Decoder.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/rundisoff/decoder.pt'))
+discriminator.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/rundisoff/discrim.pt'))
+discriminator_aux.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/rundisoff/discrimaux.pt'))
+G_A.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/rundisoff/ga.pt'))
+segmenter.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/rundisoff/seg.pt'))
+segmenter_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/rundisoff/segtwo.pt'))
+discriminator_p.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/rundisoff/discrimp.pt'))
+discriminator_p_II.load_state_dict(torch.load('C:/Users/hasee/Documents/bachelor/logbook pictures/finalresults/single/rundisoff/discrimptwo.pt'))
+
+for batch in islice(dataloader, 61, 62):
+  real_A=batch['input'].type(Tensor)
+  gt_A=batch['gt'].type(Tensor)
+
+for batch2 in islice(dataloader2, 341, 342):
+  real_B=batch2['input'].type(Tensor)
+  # gt_A=batch['gt']
+
+
 
 for epoch in range(opt["n_epochs"]):
-     
-    for i, batch in enumerate(zip(dataloader, dataloader2)):
-        if (i > len(dataloader)-1): # originalyl 2897
-          i=0
-          break
-        if (i < 30):
-          continue
-     
-        G_A.train()
-        discriminator.train()
-        Encoder.train()
-        Decoder.train()
-        discriminator_aux.train()
-        segmenter.train()
-        segmenter_II.train()
-        discriminator_p.train()
-        discriminator_p_II.train()
+    for i, batch in islice(zip(dataloader, dataloader2), 80, 81, None):
+  # for i, batch in enumerate(zip(dataloader, dataloader2)):
+      with torch.no_grad():
 
-        real_A = Variable(batch[0]["input"].type(Tensor)) # mri
-        real_B = Variable(batch[1]["input"].type(Tensor)) # ct
-
-        gt_A = Variable(batch[0]["gt"].type(Tensor)) # mri
-        # gt_B = Variable(batch[1]["gt"].type(Tensor)) # ct
-
-        '''
-        ??Transform gt labels to have 5 dimensions. Onehot. 
-        '''
-        gt_A=gt_A.detach().cpu()
-        gt_A=gt_A.numpy()
-        np_tensor=gt_A
-        physical_devices = tf.config.list_physical_devices('GPU')
-        for j in range(len(physical_devices)):
-          tf.config.experimental.set_memory_growth(physical_devices[j], True)
-        tf_tensor=tf.convert_to_tensor(np_tensor)
-        inter=tf.one_hot(tf.cast(tf.squeeze(tf_tensor), tf.uint8), 5)
-        gt_A=torch.from_numpy(inter.numpy())
-        gt_A=gt_A.permute(2,0,1)
-        gt_A=gt_A.unsqueeze(0)
-        gt_A=gt_A.to('cuda')
-        gt_A.requires_grad=True
-        
-        # TODO uint8 in tf code
-        # gt_A=gt_A.detach()
-        # torch.set_printoptions(threshold=10_000)
-        # y=torch.squeeze(gt_A).type(torch.uint8)
-        # print(y)
-        # print(torch.unique(y))
-        # y=F.one_hot(torch.squeeze(y).type(torch.uint8), num_classes=5)
-        # print(y)
-        # vis(y)
-        # print(torch.unique(y))
-        # gt_A=F.one_hot(torch.squeeze(gt_A).type(torch.LongTensor), num_classes=5)
-        
-        
-        # vis(real_B)
-        # print(real_B)        
-        '''
-        Normalize data b/w -1,1 range
-        '''
         real_A = (2*((real_A - torch.min(real_A))/(torch.max(real_A)-torch.min(real_A))))-1
         real_B = (2*((real_B - torch.min(real_B))/(torch.max(real_B)-torch.min(real_B))))-1
-        # vis(real_A)
-        # vis(real_B)
-        # print(real_B)
-        # vis(gt_A)
-        ################ Computing GAN Losses
-        '''
-        Optimizing G_A network
-        (real_A -> fake_B)
-        '''
 
-        # optimizer_G_A.zero_grad()
-        # optimizer_G_B.zero_grad()
-        optimizer_G.zero_grad()
-        optimizer_seg.zero_grad() # Encoder and seg1 + seg2
-
+        vis(real_A)
+        vis(real_B)
+        vis(gt_A)
 
         fake_imgs_b = G_A(real_A)
-
-        '''
-        D_B Discriminator
-        '''
-        prob_fake_b_is_real = discriminator(fake_imgs_b)
-        lsgan_loss_b = lsgan_loss_generator(prob_fake_b_is_real)
-
-        
-
         '''
         Optimizing the G_B network E/D 
         (real_B -> fake_A)
         '''
+        
 
         latent_real_b, latent_real_b_II = Encoder(real_B)
         fake_imgs_a = Decoder(latent_real_b, real_B)
@@ -1304,21 +1306,9 @@ for epoch in range(opt["n_epochs"]):
         '''
         Optimizing Segmentation network real
         '''
-        # optimizer_seg.zero_grad() # Encoder and seg1 + seg2
         pred_mask_b = segmenter(latent_real_b)
         pred_mask_b_II=segmenter_II(latent_real_b_II)
 
-        '''
-        D_A discriminator
-        '''
-        prob_fake_a_is_real, prob_fake_a_aux_is_real = discriminator_aux(fake_imgs_a)
-        lsgan_loss_a = lsgan_loss_generator(prob_fake_a_is_real)
-
-        '''
-        Not adding lsgan_loss_a and lsgan_loss_b ?
-        '''
-
-        ##################### GAN Cycle loss
 
         latent_fake_b, latent_fake_b_II = Encoder(fake_imgs_b)
         cycle_imgs_a = Decoder(latent_fake_b, fake_imgs_b)
@@ -1327,304 +1317,21 @@ for epoch in range(opt["n_epochs"]):
         Optimizing Segmentation network fake
         '''
         pred_mask_fake_b=segmenter(latent_fake_b)
-        # ce_loss_b, dice_loss_b = task_loss(pred_mask_fake_b, gt_A)
         pred_mask_fake_b_II=segmenter_II(latent_fake_b_II)
 
-        cycle_consistency_loss_a = LAMBDA_A * cycle_consistency_loss(real_images=real_A, generated_images=cycle_imgs_a)
-        
         cycle_imgs_b = G_A(fake_imgs_a)
-        cycle_consistency_loss_b = LAMBDA_B * cycle_consistency_loss(real_images=real_B, generated_images=cycle_imgs_b)
 
-        
-        ####################### Total Generator losses (not adding g_loss_a and g_loss_b ?)
-        '''
-        final G_A loss 
-        '''
-        g_loss_a = cycle_consistency_loss_a + cycle_consistency_loss_b + lsgan_loss_b
-        '''
-        final E/D loss
-        '''
-        g_loss_b = cycle_consistency_loss_b + cycle_consistency_loss_a + lsgan_loss_a
+        pred_mask_b = segmenter(latent_real_b)
+        pred_mask_b_II=segmenter_II(latent_real_b_II)
 
-        '''
-        backward
-        '''
-        # g_loss_a.backward(retain_graph=True)
-        # optimizer_G_A.step() # Generator
-        # g_loss_b.backward(retain_graph=True)
-        # optimizer_G_B.step() # Decoder
-        # optimizer_G.step()
+        # print(1-_dice_loss(cycle_imgs_b, real_B))
 
-        ############### Computing Discriminator losses
-        ############### Computing D_A loss
-
-        optimizer_D_B.zero_grad()
-        '''
-        Optimizing the D_B network
-        '''
-        
-        fake_pool_b=fake_imgs_b
-        fake_pool_b=fake_pool_b.detach()
-        prob_real_b_is_real = discriminator(real_B)
-        prob_fake_pool_b_is_real = discriminator(fake_pool_b)
-
-        d_loss_b = lsgan_loss_discriminator(prob_real_b_is_real, prob_fake_pool_b_is_real)
-
-        '''
-        backward
-        '''
-        # d_loss_b.backward(retain_graph=True)
-        # optimizer_D_B.step()
-
-        ############### Computing D_B loss
-        '''
-        Optimizing the D_A network
-        '''
-
-        optimizer_D_A.zero_grad()
-        
-        fake_pool_a = fake_imgs_a
-        fake_pool_a=fake_pool_a.detach()
-        prob_real_a_is_real, prob_real_a_aux = discriminator_aux(real_A)
-        prob_fake_pool_a_is_real, prob_fake_pool_a_aux_is_real = discriminator_aux(fake_pool_a)
-
-        d_loss_a = lsgan_loss_discriminator(
-            prob_real_a_is_real,
-            prob_fake_pool_a_is_real,
-        )
-
-        '''
-        ???? 
-        '''
-        cycle_imgs_a=cycle_imgs_a.detach()
-        prob_cycle_a_is_real, prob_cycle_a_aux_is_real = discriminator_aux(cycle_imgs_a)
-
-        d_loss_a_aux = lsgan_loss_discriminator(
-            prob_cycle_a_aux_is_real,
-            prob_fake_pool_a_aux_is_real,
-        )
-
-        d_loss_a = d_loss_a + d_loss_a_aux
-
-        '''
-        backward
-        '''
-        # d_loss_a.backward(retain_graph=True)
-        # optimizer_D_A.step()
-        
-        # optimizer_seg.zero_grad() # Encoder and seg1 + seg2
-
-
-        ce_loss_b, dice_loss_b = task_loss(pred_mask_fake_b, gt_A)
-        # loss = nn.MSELoss()
-        # gt_A=gt_A.to(torch.float)
-        # ce_loss_b = loss(pred_mask_fake_b, gt_A)
-        
-        ce_loss_b_II, dice_loss_b_II = task_loss(pred_mask_fake_b_II, gt_A)
-        l2_loss_b = l2_loss()
-
-
-        '''
-        Discriminator P
-        '''          
-
-        optimizer_D_P.zero_grad()
-        optimizer_D_P_II.zero_grad()
-
-        prob_pred_mask_b_is_real=discriminator_p(pred_mask_b)#################
-        lsgan_loss_p=lsgan_loss_generator(prob_pred_mask_b_is_real)
-
-        '''
-        Discriminator P II
-        '''
-        prob_pred_mask_b_II_is_real=discriminator_p_II(pred_mask_b_II) ###############
-        lsgan_loss_p_II=lsgan_loss_generator(prob_pred_mask_b_II_is_real)     
-        
-        lsgan_loss_a_aux=lsgan_loss_generator(prob_fake_a_aux_is_real)
-
-        seg_loss = ce_loss_b + dice_loss_b + l2_loss_b + 0.1*(ce_loss_b_II + dice_loss_b_II) +0.1*g_loss_b+0.1*lsgan_loss_p+0.01*lsgan_loss_p_II+0.1*lsgan_loss_a_aux
-        
-        # seg_loss.backward(retain_graph=True)
-        # optimizer_seg.step()
-
-        
-        # optimizer_G.step()
-        # optimizer_D_A.step()
-        # optimizer_D_B.step()
-
-        '''
-        optimizing D_P
-        '''
-        # optimizer_D_P.zero_grad()
-
-        prob_pred_mask_fake_b_is_real=discriminator_p(pred_mask_fake_b)
-        
-        
-        d_loss_P = lsgan_loss_discriminator(
-            prob_pred_mask_fake_b_is_real,
-            prob_pred_mask_b_is_real,
-        )
-        # d_loss_P.backward(retain_graph=True)
-        # optimizer_D_P.step()
-
-        '''
-        optimizing D_P_II
-        '''
-        
-
-        prob_pred_mask_fake_b_II_is_real = discriminator_p_II(pred_mask_fake_b_II)
-    
-
-        d_loss_P_II = lsgan_loss_discriminator(
-            prob_pred_mask_fake_b_II_is_real,
-            prob_pred_mask_b_II_is_real
-        )
-
-        # d_loss_P_II.backward()
-
-
-        '''
-        sum all losses
-        '''
-
-        '''
-        save losses
-        '''
-        data.append([
-            datetime.now(),
-            i,
-            epoch,
-            g_loss_a.item(),
-            g_loss_b.item(), 
-            d_loss_a.item(), 
-            d_loss_b.item(), 
-            seg_loss.item(), 
-            d_loss_P.item(), 
-            d_loss_P_II.item(), 
-            dice_loss_b.item(), 
-            dice_loss_b_II.item(),
-            ce_loss_b.item(),
-            ce_loss_b_II.item(),
-            # l2_loss_b.item()
-            ])
-        df = pd.DataFrame(data, columns=['time', 'index', 'epoch', 'g_a loss', 'g_b loss','d_a loss', 'd_b loss', 'seg loss', 'd_p loss', 'd_p_II loss', 'dice_b loss', 'dice_b_II loss','ce_loss_b', 'ce_loss_b_II'])
-        df.to_csv(f'{DIR}/data.csv')
-
-        losses = g_loss_a + g_loss_b + d_loss_b + d_loss_a + seg_loss + d_loss_P + d_loss_P_II
-        losses.backward()
-
-        optimizer_D_P_II.step()
-        optimizer_D_P.step()
-
-        optimizer_seg.step()
-
-        
-        optimizer_G.step()
-        optimizer_D_A.step()
-        optimizer_D_B.step()
-
-        # optimizer_D_P_II
-
-
-        # sys.stdout.write(
-        #     "[Epoch %d/%d] [Batch %d/%d] [D_A loss: %f] [D_B loss: %f] [G_A loss: %f] [G_B loss: %f]\n"
-        #     % (
-        #         epoch,
-        #         opt["n_epochs"],
-        #         i,
-        #         len(dataloader),
-        #         d_loss_a.item(),
-        #         d_loss_b.item(),
-        #         g_loss_a.item(),
-        #         g_loss_b.item(),
-        #     )
-        # )
-
-        '''
-        Putting assertions to make sure gradients flow
-        '''
-        for param in list(discriminator.parameters()):
-          assert param.grad is not None
-
-        for param in list(G_A.parameters()):
-          assert param.grad is not None
-
-        for param in list(discriminator_aux.parameters()):
-          assert param.grad is not None
-
-        for param in list(Encoder.parameters()):
-          assert param.grad is not None
-
-        for param in list(Decoder.parameters()):
-          assert param.grad is not None
-
-        sys.stdout.write(
-            "\r[Epoch %d/%d] [G_A loss: %f] [D_B loss: %f]"
-              % (
-                epoch,
-                opt["n_epochs"],
-                g_loss_b.item(),
-                d_loss_b.item()
-            )
-        )
-          
-        # if i%80==0:
-        #   with open(f'{DIR}/fakeb'+str(epoch)+str(i)+'.pickle', 'wb') as f:
-        #     pickle.dump(fake_imgs_b, f)
-        #   with open(f'{DIR}/fakea'+str(epoch)+str(i)+'.pickle', 'wb') as f:
-        #     pickle.dump(fake_imgs_a, f)
-        #   with open(f'{DIR}/cyclea'+str(epoch)+str(i)+'.pickle', 'wb') as f:
-        #     pickle.dump(cycle_imgs_a, f)
-        #   with open(f'{DIR}/cycleb'+str(epoch)+str(i)+'.pickle', 'wb') as f:
-        #     pickle.dump(cycle_imgs_b, f)
-        #   with open(f'{DIR}/pred_mask_fake_b'+str(epoch)+str(i)+'.pickle', 'wb') as f:
-        #     pickle.dump(pred_mask_fake_b, f)
-        #   with open(f'{DIR}/pred_mask_fake_b_II'+str(epoch)+str(i)+'.pickle', 'wb') as f:
-        #     pickle.dump(pred_mask_fake_b_II, f)
-        #   with open(f'{DIR}/pred_mask_b'+str(epoch)+str(i)+'.pickle', 'wb') as f:
-        #     pickle.dump(pred_mask_b, f)
-        #   with open(f'{DIR}/pred_mask_b_II'+str(epoch)+str(i)+'.pickle', 'wb') as f:
-            # pickle.dump(pred_mask_b_II, f)
-
-
-    torch.save(Encoder.state_dict(), DIR+"/encoder.pt")
-    torch.save(Decoder.state_dict(), DIR+"/decoder.pt")
-    torch.save(discriminator.state_dict(), DIR+"/discrim.pt")
-    torch.save(discriminator_aux.state_dict(), DIR+"/discrimaux.pt")
-    torch.save(G_A.state_dict(), DIR+"/ga.pt")
-    torch.save(segmenter.state_dict(), DIR+"/seg.pt")
-    torch.save(segmenter_II.state_dict(), DIR+"/segtwo.pt")
-    torch.save(discriminator_p.state_dict(), DIR+"/discrimp.pt")
-    torch.save(discriminator_p_II.state_dict(), DIR+"/discrimptwo.pt")    
-
-
-
-# with open(f'{DIR}/fakebfinal.pickle', 'wb') as f:
-#   pickle.dump(fake_imgs_b, f)
-# with open(f'{DIR}/fakeafinal.pickle', 'wb') as f:
-#   pickle.dump(fake_imgs_a, f)
-# with open(f'{DIR}/cyclebfinal.pickle', 'wb') as f:
-#   pickle.dump(cycle_imgs_b, f)
-# with open(f'{DIR}/cycleafinal.pickle', 'wb') as f:
-#   pickle.dump(cycle_imgs_a, f)
-# with open(f'{DIR}/pred_mask_fake_bfinal.pickle', 'wb') as f:
-#   pickle.dump(pred_mask_fake_b, f)
-# with open(f'{DIR}/pred_mask_fake_b_IIfinal.pickle', 'wb') as f:
-#   pickle.dump(pred_mask_fake_b_II, f)
-# with open(f'{DIR}/pred_mask_bfinal.pickle', 'wb') as f:
-#   pickle.dump(pred_mask_b, f)
-# with open(f'{DIR}/pred_mask_b_IIfinal.pickle', 'wb') as f:
-#   pickle.dump(pred_mask_b_II, f)
-
-# vis(fake_imgs_a)
-
-# '''
-# Visualizing generator outputs
-# '''
-# plt.imshow(cycle_imgs_a.detach().cpu().squeeze(),cmap='gray')
-# plt.show()
-# plt.imshow(fake_imgs_b.detach().cpu().squeeze(),cmap='gray')
-# plt.show()
-# plt.imshow(real_A.detach().cpu().squeeze(),cmap='gray')
-# plt.show()
+        vis(cycle_imgs_a)
+        vis(cycle_imgs_b)
+        vis(fake_imgs_a)
+        vis(fake_imgs_b)
+        plt.imshow(torch.squeeze(torch.argmax(pred_mask_b.detach().cpu(), dim=1)), cmap='gray')
+        plt.show()
+        plt.imshow(torch.squeeze(torch.argmax(pred_mask_fake_b.detach().cpu(), dim=1)), cmap='gray')
+        plt.show()
 
